@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Car Price Prediction</title>
+    <script>
+      function predictPrice(event) {
+        event.preventDefault(); // Prevent form from reloading
+
+        // Get form values
+        let mileage = document.getElementById("mileage").value;
+        let age = document.getElementById("age").value;
+        let audi = document.getElementById("audi").checked ? 1 : 0;
+        let bmw = document.getElementById("bmw").checked ? 1 : 0;
+
+        // Create FormData object
+        let formData = new FormData();
+        formData.append("mileage", mileage);
+        formData.append("age", age);
+        formData.append("audi", audi);
+        formData.append("bmw", bmw);
+
+        // Send request to Flask backend
+        fetch("/predict", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerHTML =
+              "Predicted Price: $" + data.predicted_price;
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+    </script>
+  </head>
+  <body>
+    <h2>Car Price Prediction</h2>
+    <form onsubmit="predictPrice(event)">
+      <label for="mileage">Mileage:</label>
+      <input type="number" id="mileage" name="mileage" required /><br /><br />
+
+      <label for="age">Age of Car:</label>
+      <input type="number" id="age" name="age" required /><br /><br />
+
+      <label>Car Model:</label><br />
+      <input type="checkbox" id="audi" name="audi" /> Audi A5<br />
+      <input type="checkbox" id="bmw" name="bmw" /> BMW X5<br /><br />
+
+      <button type="submit">Predict Price</button>
+    </form>
+    <h3 id="result"></h3>
+  </body>
+</html>
